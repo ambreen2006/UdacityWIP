@@ -1,5 +1,6 @@
 package moviesandfriends.ambreen.com.sync;
 import java.io.IOException;
+import java.net.MalformedURLException;
 
 import moviesandfriends.ambreen.com.exceptions.SyncException;
 
@@ -9,5 +10,5 @@ import moviesandfriends.ambreen.com.exceptions.SyncException;
 
 public interface IMoviesProvider
 {
-    void getListOfMoviesFilteredByType(int type) throws SyncException, IOException;
+    void getListOfMoviesFilteredBy(String filter) throws SyncException;
 }

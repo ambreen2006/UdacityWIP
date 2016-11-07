@@ -21,6 +21,7 @@ import com.squareup.picasso.Picasso;
 
 import moviesandfriends.ambreen.com.background.BackgroundService;
 import moviesandfriends.ambreen.com.sync.LocalDataStore;
+import moviesandfriends.ambreen.com.sync.MovieData;
 
 /**
  * Created by ambreen on 11/6/16.
@@ -33,7 +34,8 @@ public class ThumbnailsGridFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+                             Bundle savedInstanceState)
+    {
         Context context = this.getActivity();
         View layoutView = inflater.inflate(R.layout.grid_view_layout, container, false);
         Intent intent = new Intent(context, BackgroundService.class);
@@ -89,8 +91,8 @@ public class ThumbnailsGridFragment extends Fragment {
         }
 
         public int getCount() {
-            Log.d("Activity", "Total Count " + dataStore.count());
-            return dataStore.count();
+            Log.d("Activity", "Total Count " + dataStore.count("popular"));
+            return dataStore.count("popular");
         }
 
         public Object getItem(int position) {
@@ -117,8 +119,9 @@ public class ThumbnailsGridFragment extends Fragment {
 
             StringBuilder imageURL = new StringBuilder();
 
-            imageURL.append("http://image.tmdb.org/t/p/w").append(thumbRequestWidth).append(dataStore.getPosterPath(position));
-            Log.d("View",imageURL.toString());
+            MovieData mData = (MovieData) dataStore.getData("popular",position);
+
+            imageURL.append("http://image.tmdb.org/t/p/w").append(thumbRequestWidth).append(mData.posterPath);
             Picasso.with(mContext).load(imageURL.toString()).into((ImageView)(imageView));
             return imageView;
         }

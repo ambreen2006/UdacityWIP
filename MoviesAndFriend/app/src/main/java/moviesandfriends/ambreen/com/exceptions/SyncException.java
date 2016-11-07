@@ -6,21 +6,24 @@ package moviesandfriends.ambreen.com.exceptions;
 
 public class SyncException extends Exception {
 
-    public String toString() {
-        return "SyncException Occurred";
+    public int responseCode;
+    public String message;
+
+    public SyncException()
+    {}
+
+    public SyncException(String message)
+    {
+        this.message = message;
     }
 
-    public class MovieDBServerException extends Exception {
-        public int responseCode;
-
-        public MovieDBServerException(int responseCode) {
-            this.responseCode = responseCode;
+    public String toString()
+    {
+        if(responseCode > 0)
+        {
+            return message+" Response Code = "+responseCode;
         }
-
-        public String toString() {
-            return "Exception happened while fetching request form MovieDB server. ResponseCode received: "+this.responseCode;
-        }
-
-
+        else
+            return message;
     }
 }

@@ -17,6 +17,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import moviesandfriends.ambreen.com.Constants.LogTag;
 import moviesandfriends.ambreen.com.exceptions.SyncException;
 import moviesandfriends.ambreen.com.background.BackgroundService;
 import moviesandfriends.ambreen.com.moviesandfriend.BuildConfig;
@@ -30,68 +31,71 @@ import static moviesandfriends.ambreen.com.sync.LocalDataStore.*;
 
 public class MoviesProvider implements IMoviesProvider {
 
-    protected  Context context;
-    protected  LocalDataStore dataStore;
+    private     Context context;
+    private     MovieSourceHttpConnection httpConnection;
+    private     LocalDataStore dataStore;
+    private     String key;
 
-    private String key;
+    public MoviesProvider(Context context, MovieSourceHttpConnection httpConnection)
+    {
+        this.context = context;
+        this.httpConnection = httpConnection;
+        this.dataStore = LocalDataStore.getInstance();
+    }
 
     public MoviesProvider(Context context)
     {
         this.context = context;
-        dataStore = getInstance();
+        this.dataStore = LocalDataStore.getInstance();
+        this.httpConnection =  new MovieSourceHttpConnection(context);
+        this.key = BuildConfig.MOVIE_DB_KEY;
     }
 
-    public void getListOfMoviesFilteredByType(int type) throws SyncException, IOException {
+    public void getListOfMoviesFilteredBy(String filter) throws SyncException {
 
         InputStream is = null;
 
-        if(!isNetworkConnected())
+        if(!this.httpConnection.isNetworkConnected())
             throw new SyncException();
 
         try
         {
-            MovieSourceHttpConnection connection = new MovieSourceHttpConnection();
-            JSONObject jsonObject = connection.fetchContent(getURL());
+            JSONObject jsonObject = this.httpConnection.fetchContent(getURL(filter));
             JSONArray results = jsonObject.getJSONArray("results");
 
             for (int i = 0; i < results.length(); i++)
             {
                 JSONObject aMovie = results.getJSONObject(i);
+
                 String title = aMovie.getString("title");
                 int id = aMovie.getInt("id");
-                LocalDataStore.MovieData movieData = dataStore.new MovieData();
+
+                MovieData movieData = new MovieData();
                 movieData.posterPath = aMovie.getString("poster_path");
                 movieData.title = aMovie.getString("title");
-                Log.d("MovieProvider", ""+movieData.title+" ID = "+id);
-                dataStore.addData(movieData);
+                this.dataStore.addData(filter, movieData);
             }
-
         }
-        catch (JSONException jException)
+        catch (JSONException | MalformedURLException exception)
         {
-            Log.e("MovieProvider","Error parsing json "+jException.toString());
-        }
-        catch (Exception exception)
-        {
-            throw  exception;
+            Log.e(LogTag.MOVIES_PROVIDER,exception.toString());
         }
     }
 
-    protected boolean isNetworkConnected()
+    public boolean isNetworkConnected()
     {
-        ConnectivityManager connMgr = (ConnectivityManager) this.context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo info = connMgr.getActiveNetworkInfo();
-        if(info != null && info.isConnected())
-        {
-            return true;
-        }
-
-        return false;
+        return httpConnection.isNetworkConnected();
     }
 
-    private URL getURL() throws MalformedURLException
+    private URL getURL(String filter) throws MalformedURLException
     {
-        URL url = new URL("https://api.themoviedb.org/3/movie/popular?page=1&api_key=");
-        return url;
+        StringBuilder urlBuilder = new StringBuilder("https://api.themoviedb.org/3/movie/");
+
+        urlBuilder.append(filter);
+        urlBuilder.append("?");
+        urlBuilder.append("page=1");
+        urlBuilder.append("&api_key=");
+        urlBuilder.append(key);
+        return new URL(urlBuilder.toString());
     }
 }

@@ -9,6 +9,8 @@ import android.util.Log;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
+import moviesandfriends.ambreen.com.Constants.LogTag;
+import moviesandfriends.ambreen.com.exceptions.SyncException;
 import moviesandfriends.ambreen.com.sync.LocalDataStore;
 import moviesandfriends.ambreen.com.sync.MoviesProvider;
 
@@ -31,18 +33,17 @@ public class BackgroundService extends IntentService {
     @Override
     protected void onHandleIntent(Intent workIntent)
     {
-        Log.d("BackgroundService","OnHandleIntent");
         MoviesProvider provider = new MoviesProvider(this);
+        String filter = "popular";
         try
         {
-            provider.getListOfMoviesFilteredByType(1);
-            broadcastIntent.putExtra(STATUS_CODE, LocalDataStore.getInstance().count());
+            provider.getListOfMoviesFilteredBy(filter);
+            broadcastIntent.putExtra(STATUS_CODE, LocalDataStore.getInstance().count(filter));
             LocalBroadcastManager.getInstance(this).sendBroadcast(broadcastIntent);
-
         }
-        catch(Exception e)
+        catch(SyncException e)
         {
-            e.printStackTrace();
+            Log.e(LogTag.BACKGROUND_SERVICE,e.toString());
         }
     }
 }

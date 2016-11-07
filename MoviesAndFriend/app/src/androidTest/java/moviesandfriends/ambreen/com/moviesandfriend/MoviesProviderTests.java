@@ -37,14 +37,12 @@ public class MoviesProviderTests {
     @Test
     public void testPopularMovieContents() {
         MoviesProvider provider = new MoviesProvider(appContext);
-
-        try {
-
-            provider.getListOfMoviesFilteredByType(1);
-
-        } catch (Exception e) {
+        try
+        {
+            provider.getListOfMoviesFilteredBy("Popular");
+        }
+        catch (Exception e) {
             Assert.assertNull(e);
         }
-
     }
 }

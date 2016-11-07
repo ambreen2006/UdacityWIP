@@ -3,21 +3,17 @@ package moviesandfriends.ambreen.com.sync;
 import android.widget.ArrayAdapter;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.StringTokenizer;
+import java.util.Vector;
 
 /**
  * Created by ambreen on 11/4/16.
  */
 
-public class LocalDataStore
+public class LocalDataStore<T> implements IDataStore<T>
 {
-    public class MovieData
-    {
-        String posterPath;
-        String title;
-    }
-
-    ArrayList<MovieData> moviesContent = new ArrayList<MovieData>();
+    Hashtable<String,Vector<T>> contents = new Hashtable<String,Vector<T>>();
 
     private static LocalDataStore ourInstance = new LocalDataStore();
 
@@ -25,37 +21,39 @@ public class LocalDataStore
         return ourInstance;
     }
 
-    private LocalDataStore() {
+    private LocalDataStore() {}
 
-    }
-
-    public String getTitle(int index)
+    public T getData(String filter, int index)
     {
-        if(index < moviesContent.size()) {
-            return moviesContent.get(index).title;
+        Vector<T> movieVector = contents.get(filter);
+        if(movieVector != null)
+        {
+           return movieVector.get(index);
         }
-        else
-            return  "";
+        return null;
     }
 
-    public void addData(MovieData data)
+    public void addData(String filter,T data)
     {
-        moviesContent.add(data);
+        Vector<T> movieVector;
+        movieVector = contents.get(filter);
+        if(movieVector == null)
+        {
+            movieVector = new Vector<T>();
+        }
+
+        movieVector.add(data);
+        contents.put(filter,movieVector);
     }
 
-    public String getPosterPath(int index)
+    public int count(String filter)
     {
-        return moviesContent.get(index).posterPath;
+        Vector<T> movieVector = contents.get(filter);
+        if(movieVector != null) {
+            return movieVector.size();
+        }
+
+        return 0;
     }
 
-    public int count()
-    {
-        return moviesContent.size();
-    }
-
-    public class MovieInformation
-    {
-        public String posterPath;
-        public String title;
-    }
 }
