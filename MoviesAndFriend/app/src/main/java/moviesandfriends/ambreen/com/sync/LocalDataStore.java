@@ -15,13 +15,14 @@ public class LocalDataStore<T> implements IDataStore<T>
 {
     Hashtable<String,Vector<T>> contents = new Hashtable<String,Vector<T>>();
 
+/*
     private static LocalDataStore ourInstance = new LocalDataStore();
 
-    public static LocalDataStore getInstance() {
+    public static T getInstance(Class<T> class)
+    {
         return ourInstance;
     }
-
-    private LocalDataStore() {}
+*/
 
     public T getData(String filter, int index)
     {
@@ -49,11 +50,17 @@ public class LocalDataStore<T> implements IDataStore<T>
     public int count(String filter)
     {
         Vector<T> movieVector = contents.get(filter);
-        if(movieVector != null) {
+        if(movieVector != null)
+        {
             return movieVector.size();
         }
 
         return 0;
+    }
+
+    public void removeDataForFilter(String filter)
+    {
+        contents.remove(filter);
     }
 
 }

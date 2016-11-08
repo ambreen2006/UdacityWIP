@@ -15,18 +15,18 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import moviesandfriends.ambreen.com.Constants.LogTag;
+import moviesandfriends.ambreen.com.constants.Constants;
 import moviesandfriends.ambreen.com.exceptions.SyncException;
 
 /**
  * Created by ambreen on 11/4/16.
  */
 
-public class MovieSourceHttpConnection {
+public class ClientHttpConnection {
 
     private Context context;
 
-    public MovieSourceHttpConnection(Context context)
+    public ClientHttpConnection(Context context)
     {
         this.context = context;
     }
@@ -50,7 +50,7 @@ public class MovieSourceHttpConnection {
             {
                 inputStream = conn.getInputStream();
                 String responseStr = IOUtils.toString(inputStream);
-                Log.d(LogTag.COMM, responseStr);
+                Log.d(Constants.LogTag.COMM, responseStr);
                 return (JSONObject) new JSONTokener(responseStr).nextValue();
             }
             else
@@ -64,11 +64,11 @@ public class MovieSourceHttpConnection {
         }
         catch (JSONException j)
         {
-            Log.e(LogTag.COMM, j.getMessage() + Log.getStackTraceString(j));
+            Log.e(Constants.LogTag.COMM, j.getMessage() + Log.getStackTraceString(j));
         }
         catch (IOException e)
         {
-            Log.e(LogTag.COMM,e.getMessage() + Log.getStackTraceString(e));
+            Log.e(Constants.LogTag.COMM,e.getMessage() + Log.getStackTraceString(e));
         }
         finally
         {

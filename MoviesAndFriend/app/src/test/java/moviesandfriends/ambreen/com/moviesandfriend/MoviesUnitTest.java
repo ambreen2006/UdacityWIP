@@ -1,29 +1,18 @@
 package moviesandfriends.ambreen.com.moviesandfriend;
 
 import android.content.Context;
-import android.graphics.Movie;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.mockito.stubbing.Answer;
-import org.mockito.stubbing.OngoingStubbing;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.List;
 
 import moviesandfriends.ambreen.com.exceptions.SyncException;
 import moviesandfriends.ambreen.com.sync.*;
@@ -40,7 +29,7 @@ import static org.mockito.Mockito.*;
 public class MoviesUnitTest
 {
     @Mock private Context mContext;
-    @Mock private MovieSourceHttpConnection httpConnection;
+    @Mock private ClientHttpConnection httpConnection;
     @InjectMocks MoviesProvider provider;
 
     @Test(expected = SyncException.class)
@@ -61,7 +50,7 @@ public class MoviesUnitTest
         when(httpConnection.fetchContent(any(URL.class))).thenReturn(dummyJson);
 
         provider.getListOfMoviesFilteredBy(filter);
-        LocalDataStore dataStore = LocalDataStore.getInstance();
+        LocalDataStore dataStore = DataStoreFactory.getMovieDataStore();
         MovieData movieData = (MovieData) dataStore.getData(filter,0);
 
         assertEquals(movieData.posterPath,((JSONObject)array.get(0)).get("poster_path").toString());
@@ -69,8 +58,26 @@ public class MoviesUnitTest
         assertEquals(1,dataStore.count(filter));
     }
 
-    private static JSONObject dummyMovieData1()  throws JSONException {
+    @Test
+    public void testDataStoreClearContent() throws JSONException, SyncException, MalformedURLException
+    {
+        String filter = "popular";
+        JSONObject dummyJson = dummyMovieData1();
 
+        when(httpConnection.isNetworkConnected()).thenReturn(true);
+        when(httpConnection.fetchContent(any(URL.class))).thenReturn(dummyJson);
+
+        provider.getListOfMoviesFilteredBy(filter);
+        LocalDataStore dataStore = DataStoreFactory.getMovieDataStore();
+
+        assertEquals(dataStore.count(filter),1);
+
+        dataStore.removeDataForFilter(filter);
+        assertEquals(dataStore.count(filter),0);
+    }
+
+    private static JSONObject dummyMovieData1()  throws JSONException
+    {
         JSONObject movie1 = new JSONObject();
         movie1.put("id",1);
         movie1.put("title","Patch Adams");
@@ -83,4 +90,5 @@ public class MoviesUnitTest
         responseJSON.put("results",resultArray);
         return responseJSON;
     }
+
 }

@@ -1,17 +1,13 @@
 package moviesandfriends.ambreen.com.background;
 
 import android.app.IntentService;
-import android.app.Service;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-import org.json.JSONObject;
-import org.json.JSONTokener;
-
-import moviesandfriends.ambreen.com.Constants.LogTag;
+import moviesandfriends.ambreen.com.constants.Constants;
 import moviesandfriends.ambreen.com.exceptions.SyncException;
-import moviesandfriends.ambreen.com.sync.LocalDataStore;
+import moviesandfriends.ambreen.com.sync.DataStoreFactory;
 import moviesandfriends.ambreen.com.sync.MoviesProvider;
 
 /**
@@ -34,16 +30,16 @@ public class BackgroundService extends IntentService {
     protected void onHandleIntent(Intent workIntent)
     {
         MoviesProvider provider = new MoviesProvider(this);
-        String filter = "popular";
+        String filter = workIntent.getStringExtra("filter");
         try
         {
             provider.getListOfMoviesFilteredBy(filter);
-            broadcastIntent.putExtra(STATUS_CODE, LocalDataStore.getInstance().count(filter));
+            broadcastIntent.putExtra(STATUS_CODE, DataStoreFactory.getMovieDataStore().count(filter));
             LocalBroadcastManager.getInstance(this).sendBroadcast(broadcastIntent);
         }
         catch(SyncException e)
         {
-            Log.e(LogTag.BACKGROUND_SERVICE,e.toString());
+            Log.e(Constants.LogTag.BACKGROUND_SERVICE,e.toString());
         }
     }
 }

@@ -1,53 +1,44 @@
 package moviesandfriends.ambreen.com.sync;
 
-import android.app.IntentService;
 import android.content.Context;
-import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import moviesandfriends.ambreen.com.Constants.LogTag;
+import moviesandfriends.ambreen.com.constants.Constants;
 import moviesandfriends.ambreen.com.exceptions.SyncException;
-import moviesandfriends.ambreen.com.background.BackgroundService;
 import moviesandfriends.ambreen.com.moviesandfriend.BuildConfig;
-
-import static moviesandfriends.ambreen.com.sync.LocalDataStore.*;
 
 /**
  * Created by ambreen on 11/4/16.
  */
 
-
 public class MoviesProvider implements IMoviesProvider {
 
     private     Context context;
-    private     MovieSourceHttpConnection httpConnection;
+    private     ClientHttpConnection httpConnection;
     private     LocalDataStore dataStore;
     private     String key;
 
-    public MoviesProvider(Context context, MovieSourceHttpConnection httpConnection)
+    public MoviesProvider(Context context, ClientHttpConnection httpConnection)
     {
         this.context = context;
         this.httpConnection = httpConnection;
-        this.dataStore = LocalDataStore.getInstance();
+        this.dataStore = DataStoreFactory.getMovieDataStore();
     }
 
     public MoviesProvider(Context context)
     {
         this.context = context;
-        this.dataStore = LocalDataStore.getInstance();
-        this.httpConnection =  new MovieSourceHttpConnection(context);
+        this.dataStore = DataStoreFactory.getMovieDataStore();
+        this.httpConnection =  new ClientHttpConnection(context);
         this.key = BuildConfig.MOVIE_DB_KEY;
     }
 
@@ -56,7 +47,9 @@ public class MoviesProvider implements IMoviesProvider {
         InputStream is = null;
 
         if(!this.httpConnection.isNetworkConnected())
-            throw new SyncException();
+        {
+            throw new SyncException("Network connectivity could not be established");
+        }
 
         try
         {
@@ -75,10 +68,12 @@ public class MoviesProvider implements IMoviesProvider {
                 movieData.title = aMovie.getString("title");
                 this.dataStore.addData(filter, movieData);
             }
+
+            Log.d(Constants.LogTag.MOVIES_PROVIDER,"results size = "+results.length());
         }
         catch (JSONException | MalformedURLException exception)
         {
-            Log.e(LogTag.MOVIES_PROVIDER,exception.toString());
+            Log.e(Constants.LogTag.MOVIES_PROVIDER,exception.toString());
         }
     }
 

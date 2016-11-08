@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -20,6 +21,8 @@ import android.widget.ImageView;
 import com.squareup.picasso.Picasso;
 
 import moviesandfriends.ambreen.com.background.BackgroundService;
+import moviesandfriends.ambreen.com.constants.Constants;
+import moviesandfriends.ambreen.com.sync.DataStoreFactory;
 import moviesandfriends.ambreen.com.sync.LocalDataStore;
 import moviesandfriends.ambreen.com.sync.MovieData;
 
@@ -30,21 +33,26 @@ import moviesandfriends.ambreen.com.sync.MovieData;
 public class ThumbnailsGridFragment extends Fragment {
 
     Context context;
+    String  filter;
+    LocalDataStore<MovieData> dataStore;
     GridCellAdapter cellAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {
-        Context context = this.getActivity();
+        this.filter = Constants.FilterType.POPULAR;
+        this.context = this.getActivity();
+        this.dataStore = DataStoreFactory.getMovieDataStore();
+
         View layoutView = inflater.inflate(R.layout.grid_view_layout, container, false);
-        Intent intent = new Intent(context, BackgroundService.class);
-        context.startService(intent);
 
         IntentFilter backgroundServiceBroadcastFilter = new IntentFilter(BackgroundService.BROADCAST_MSG);
-
         BackgroundBroadcastReceiver bgroundServiceReceiver = new BackgroundBroadcastReceiver();
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(bgroundServiceReceiver, backgroundServiceBroadcastFilter);
+
+        requestMovieData(Constants.FilterType.POPULAR);
+        requestMovieData(Constants.FilterType.TOP_RATED);
 
         GridView gridView = (GridView) layoutView.findViewById(R.id.gridview);
 
@@ -64,10 +72,43 @@ public class ThumbnailsGridFragment extends Fragment {
         inflater.inflate(R.menu.sort_menu,menu);
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        switch (item.getItemId())
+        {
+            case R.id.ratings_menu:
+                filter = Constants.FilterType.TOP_RATED;
+                requestMovieData(filter);
+                cellAdapter.notifyDataSetChanged();
+                return true;
+
+            case R.id.popular_menu:
+                filter = Constants.FilterType.POPULAR;
+                requestMovieData(filter);
+                cellAdapter.notifyDataSetChanged();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    public void requestMovieData(String rFilter)
+    {
+        if(dataStore.count(rFilter) == 0)
+        {
+            Intent intent = new Intent(context, BackgroundService.class);
+            intent.putExtra("filter", rFilter);
+            context.startService(intent);
+        }
+    }
+
     class BackgroundBroadcastReceiver extends BroadcastReceiver {
 
         @Override
-        public void onReceive(Context context, Intent intent) {
+        public void onReceive(Context context, Intent intent)
+        {
+            Log.d(Constants.LogTag.VIEW,"broadcase received");
             cellAdapter.notifyDataSetChanged();
         }
     }
@@ -84,18 +125,20 @@ public class ThumbnailsGridFragment extends Fragment {
         public GridCellAdapter(Context c)
         {
             mContext = c;
-            dataStore = LocalDataStore.getInstance();
+            dataStore = DataStoreFactory.getMovieDataStore();
 
             thumbImgWidth = (int) getResources().getDimension(R.dimen.poster_thumbnail_width);
             thumbImgHeight =(int) getResources().getDimension(R.dimen.poster_thumbnail_height);
         }
 
-        public int getCount() {
+        public int getCount()
+        {
             Log.d("Activity", "Total Count " + dataStore.count("popular"));
-            return dataStore.count("popular");
+            return dataStore.count(filter);
         }
 
-        public Object getItem(int position) {
+        public Object getItem(int position)
+        {
             return null;
         }
 
@@ -103,8 +146,8 @@ public class ThumbnailsGridFragment extends Fragment {
             return 0;
         }
 
-        // create a new ImageView for each item referenced by the Adapter
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(int position, View convertView, ViewGroup parent)
+        {
             ImageView imageView;
             if (convertView == null)
             {
@@ -119,12 +162,11 @@ public class ThumbnailsGridFragment extends Fragment {
 
             StringBuilder imageURL = new StringBuilder();
 
-            MovieData mData = (MovieData) dataStore.getData("popular",position);
+            MovieData mData = (MovieData) dataStore.getData(filter,position);
 
             imageURL.append("http://image.tmdb.org/t/p/w").append(thumbRequestWidth).append(mData.posterPath);
             Picasso.with(mContext).load(imageURL.toString()).into((ImageView)(imageView));
             return imageView;
         }
     }
-
 }

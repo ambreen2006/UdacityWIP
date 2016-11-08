@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-
-<item android:id="@+id/ratings_menu"
-      android:title="@string/ratings_sort_menu_text"/>
+    <item
+        android:id="@+id/ratings_menu"
+        android:title="@string/ratings_sort_menu_text" />
+    <item
+        android:id="@+id/popular_menu"
+        android:title="@string/popular_sort_menu_text" />
 </menu>

@@ -24,6 +24,10 @@ android {
             it.buildConfigField "String","MOVIE_DB_KEY","\""+ext.credentialProperties['moviedb_key']+"\""
         }
     }
+
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
 }
 
 dependencies {
