@@ -24,6 +24,8 @@ public class SyncException extends Exception {
             return message+" Response Code = "+responseCode;
         }
         else
+        {
             return message;
+        }
     }
 }

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MoviesAndFriend</string>
+    <string name="app_name">Movies And Friend</string>
     <string name="ratings_sort_menu_text">Top Rated</string>
     <string name="popular_sort_menu_text">Most Popular</string>
 </resources>

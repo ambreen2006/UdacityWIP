@@ -22,24 +22,20 @@ import moviesandfriends.ambreen.com.moviesandfriend.BuildConfig;
 
 public class MoviesProvider implements IMoviesProvider {
 
-    private     Context context;
     private     ClientHttpConnection httpConnection;
     private     LocalDataStore dataStore;
     private     String key;
 
-    public MoviesProvider(Context context, ClientHttpConnection httpConnection)
+    public MoviesProvider(ClientHttpConnection httpConnection)
     {
-        this.context = context;
         this.httpConnection = httpConnection;
         this.dataStore = DataStoreFactory.getMovieDataStore();
+        this.key = BuildConfig.MOVIE_DB_KEY;
     }
 
     public MoviesProvider(Context context)
     {
-        this.context = context;
-        this.dataStore = DataStoreFactory.getMovieDataStore();
-        this.httpConnection =  new ClientHttpConnection(context);
-        this.key = BuildConfig.MOVIE_DB_KEY;
+        this((new ClientHttpConnection(context)));
     }
 
     public void getListOfMoviesFilteredBy(String filter) throws SyncException {
@@ -60,12 +56,15 @@ public class MoviesProvider implements IMoviesProvider {
             {
                 JSONObject aMovie = results.getJSONObject(i);
 
-                String title = aMovie.getString("title");
-                int id = aMovie.getInt("id");
-
                 MovieData movieData = new MovieData();
-                movieData.posterPath = aMovie.getString("poster_path");
-                movieData.title = aMovie.getString("title");
+
+                movieData.title = aMovie.getString(Constants.MovieDB.TITLE_KEY);
+                movieData.posterPath = aMovie.getString(Constants.MovieDB.POSTER_PATH_KEY);
+                movieData.overview = aMovie.getString(Constants.MovieDB.OVERVIEW_KEY);
+                movieData.releaseDate = aMovie.getString(Constants.MovieDB.RELEASE_DATE_KEY);
+                movieData.backdropPath = aMovie.getString(Constants.MovieDB.BACKDROP_PATH_KEY);
+                movieData.voteAverage = aMovie.getString(Constants.MovieDB.VOTE_AVERAGE_KEY);
+
                 this.dataStore.addData(filter, movieData);
             }
 
@@ -84,13 +83,19 @@ public class MoviesProvider implements IMoviesProvider {
 
     private URL getURL(String filter) throws MalformedURLException
     {
-        StringBuilder urlBuilder = new StringBuilder("https://api.themoviedb.org/3/movie/");
-
+        StringBuilder urlBuilder = new StringBuilder(Constants.MovieDB.URL_PREFIX);
         urlBuilder.append(filter);
         urlBuilder.append("?");
         urlBuilder.append("page=1");
         urlBuilder.append("&api_key=");
         urlBuilder.append(key);
         return new URL(urlBuilder.toString());
+    }
+
+    public String getStringURLForPoster(String posterPath, int size)
+    {
+        StringBuilder imageURL = new StringBuilder();
+        imageURL.append(Constants.MovieDB.THUMBNAIL_URL_PREFIX).append(size).append(posterPath);
+        return imageURL.toString();
     }
 }

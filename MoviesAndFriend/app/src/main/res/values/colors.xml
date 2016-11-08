@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorPrimary">#373737</color>
+    <color name="colorPrimaryDark">#000000</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="gridViewColor">#575757</color>
+    <color name="mainBackgroundColor">#373737</color>
+    <color name="dirtyWhiteColor">#D8D8D8</color>
+    <color name="whiteColor">#FFFFFF</color>
+    <color name="yellowColor">#FAE807</color>
+
 </resources>

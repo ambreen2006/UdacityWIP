@@ -14,9 +14,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -35,7 +38,8 @@ public class ThumbnailsGridFragment extends Fragment {
     Context context;
     String  filter;
     LocalDataStore<MovieData> dataStore;
-    GridCellAdapter cellAdapter;
+    GridAdapter gridAdapter;
+    GridView    gridView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -54,14 +58,51 @@ public class ThumbnailsGridFragment extends Fragment {
         requestMovieData(Constants.FilterType.POPULAR);
         requestMovieData(Constants.FilterType.TOP_RATED);
 
-        GridView gridView = (GridView) layoutView.findViewById(R.id.gridview);
+        this.gridView = (GridView) layoutView.findViewById(R.id.gridview);
+        this.gridView.setColumnWidth((int) getResources().getDimension(R.dimen.poster_thumbnail_width));
 
-        gridView.setColumnWidth((int) getResources().getDimension(R.dimen.poster_thumbnail_width));
+        this.gridAdapter = new GridAdapter(context);
+        this.gridView.setAdapter(gridAdapter);
 
-        cellAdapter = new GridCellAdapter(context);
-        gridView.setAdapter(cellAdapter);
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
+            public void onItemClick(AdapterView<?> parent, View v,
+                                    int position, long id) {
+
+                Intent intent = new Intent(getActivity(),DetailActivity.class);
+                intent.putExtra("SELECTED_INDEX",position);
+                intent.putExtra("SELECTED_FILTER",filter);
+                startActivity(intent);
+            }
+        });
 
         setHasOptionsMenu(true);
+
+        final View footerView = layoutView.findViewById(R.id.load_more_view);
+        gridView.setOnScrollListener(new GridView.OnScrollListener() {
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem,
+                                 int visibleItemCount, int totalItemCount) {
+
+                if (firstVisibleItem + visibleItemCount == totalItemCount) {
+
+                    // last item in grid is on the screen, show footer:
+                    System.out.println("Showing load more button");
+                    footerView.setVisibility(View.VISIBLE);
+
+                } else if (footerView.getVisibility() != View.GONE) {
+
+                    // last item in grid not on the screen, hide footer:
+                    footerView.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onScrollStateChanged(AbsListView view,
+                                             int scrollState) {
+            }
+        });
 
         return layoutView;
     }
@@ -78,15 +119,17 @@ public class ThumbnailsGridFragment extends Fragment {
         switch (item.getItemId())
         {
             case R.id.ratings_menu:
-                filter = Constants.FilterType.TOP_RATED;
+                this.filter = Constants.FilterType.TOP_RATED;
                 requestMovieData(filter);
-                cellAdapter.notifyDataSetChanged();
+                this.gridAdapter.notifyDataSetChanged();
+                this.gridView.smoothScrollToPosition(0);
                 return true;
 
             case R.id.popular_menu:
-                filter = Constants.FilterType.POPULAR;
+                this.filter = Constants.FilterType.POPULAR;
                 requestMovieData(filter);
-                cellAdapter.notifyDataSetChanged();
+                this.gridAdapter.notifyDataSetChanged();
+                this.gridView.smoothScrollToPosition(0);
                 return true;
         }
 
@@ -109,20 +152,19 @@ public class ThumbnailsGridFragment extends Fragment {
         public void onReceive(Context context, Intent intent)
         {
             Log.d(Constants.LogTag.VIEW,"broadcase received");
-            cellAdapter.notifyDataSetChanged();
+            gridAdapter.notifyDataSetChanged();
         }
     }
 
-    public class GridCellAdapter extends BaseAdapter {
+    public class GridAdapter extends BaseAdapter {
 
         private Context mContext;
         LocalDataStore dataStore;
 
         int thumbImgWidth = 0;
         int thumbImgHeight = 0;
-        private static final int thumbRequestWidth = 185;
 
-        public GridCellAdapter(Context c)
+        public GridAdapter(Context c)
         {
             mContext = c;
             dataStore = DataStoreFactory.getMovieDataStore();
@@ -133,7 +175,6 @@ public class ThumbnailsGridFragment extends Fragment {
 
         public int getCount()
         {
-            Log.d("Activity", "Total Count " + dataStore.count("popular"));
             return dataStore.count(filter);
         }
 
@@ -161,10 +202,10 @@ public class ThumbnailsGridFragment extends Fragment {
             }
 
             StringBuilder imageURL = new StringBuilder();
-
             MovieData mData = (MovieData) dataStore.getData(filter,position);
 
-            imageURL.append("http://image.tmdb.org/t/p/w").append(thumbRequestWidth).append(mData.posterPath);
+            imageURL.append(Constants.MovieDB.THUMBNAIL_URL_PREFIX).append(Constants.MovieDB.psoterSmall).append(mData.posterPath);
+            System.out.println(imageURL.toString());
             Picasso.with(mContext).load(imageURL.toString()).into((ImageView)(imageView));
             return imageView;
         }

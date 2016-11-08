@@ -15,15 +15,6 @@ public class LocalDataStore<T> implements IDataStore<T>
 {
     Hashtable<String,Vector<T>> contents = new Hashtable<String,Vector<T>>();
 
-/*
-    private static LocalDataStore ourInstance = new LocalDataStore();
-
-    public static T getInstance(Class<T> class)
-    {
-        return ourInstance;
-    }
-*/
-
     public T getData(String filter, int index)
     {
         Vector<T> movieVector = contents.get(filter);

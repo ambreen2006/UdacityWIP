@@ -6,6 +6,10 @@ package moviesandfriends.ambreen.com.sync;
 
 public class MovieData
 {
-    public String posterPath;
     public String title;
+    public String posterPath;
+    public String releaseDate;
+    public String voteAverage;
+    public String overview;
+    public String backdropPath;
 }
