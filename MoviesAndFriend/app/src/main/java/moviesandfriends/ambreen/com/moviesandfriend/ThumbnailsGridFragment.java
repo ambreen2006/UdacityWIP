@@ -74,6 +74,8 @@ public class ThumbnailsGridFragment extends Fragment {
         mDataStore = DataStoreFactory.getMovieDataStore();
         mContentFetchItent = new Intent(mContext, BackgroundService.class);
 
+        this.updateTitle();
+
         View layoutView = inflater.inflate(R.layout.grid_view_layout, container, false);
         mGridView = (GridView) layoutView.findViewById(R.id.gridview);
 
@@ -139,10 +141,12 @@ public class ThumbnailsGridFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        String newTitle;
         switch (item.getItemId())
         {
             case R.id.ratings_menu:
                 mFilter = Constants.FilterTypeConst.TOP_RATED;
+                this.updateTitle();
                 requestMovieDataIfEmpty(mFilter);
                 mGridAdapter.notifyDataSetChanged();
                 mGridView.smoothScrollToPosition(0);
@@ -150,6 +154,7 @@ public class ThumbnailsGridFragment extends Fragment {
 
             case R.id.popular_menu:
                 mFilter = Constants.FilterTypeConst.POPULAR;
+                this.updateTitle();
                 requestMovieDataIfEmpty(mFilter);
                 mGridAdapter.notifyDataSetChanged();
                 mGridView.smoothScrollToPosition(0);
@@ -193,6 +198,12 @@ public class ThumbnailsGridFragment extends Fragment {
         mContentFetchItent.putExtra(Constants.MovieDBConst.FILTER_REQUEST, rFilter);
         mContentFetchItent.putExtra(Constants.MovieDBConst.PAGE_REQUEST,count);
         mContext.startService(mContentFetchItent);
+    }
+
+    private void updateTitle()
+    {
+        String newTitle = getResources().getString(R.string.app_name) +": "+ mFilter;
+        getActivity().setTitle(newTitle);
     }
 
     /**

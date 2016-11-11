@@ -3,5 +3,8 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="poster_thumbnail_width">154dp</dimen>
-    <dimen name="poster_thumbnail_height">231dp</dimen>
+    <dimen name="poster_thumbnail_horizontal_spacing">5dp</dimen>
+    <dimen name="poster_thumbnail_vertical_spacing">5dp</dimen>
+    <dimen name="attribution_logo_width">100dp</dimen>
+
 </resources>

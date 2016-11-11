@@ -1,0 +1,56 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/mainBackgroundColor"
+    android:orientation="vertical"
+    tools:context="moviesandfriends.ambreen.com.moviesandfriend.SplashScreenActivity">
+
+    <TextView
+        android:id="@+id/splash_title_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:gravity="center_horizontal"
+        android:keepScreenOn="true"
+        android:padding="20dp"
+        android:text="@string/app_name"
+        android:textColor="@color/yellowColor"
+        android:textSize="40sp"
+        android:textStyle="bold"
+        />
+
+    <TextView
+        android:id="@+id/developer_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/splash_title_view"
+        android:layout_centerHorizontal="true"
+        android:text="@string/project_info"
+        android:textColor="@color/whiteColor"
+        android:textSize="14sp"
+        />
+
+    <ImageView
+        android:id="@+id/attribution_logo"
+        android:layout_width="@dimen/attribution_logo_width"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:contentDescription="@string/attribution_logo_description"
+        android:src="@drawable/tmdb_logo"
+        />
+
+    <TextView
+        android:id="@+id/attribution_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/attribution_logo"
+        android:layout_centerHorizontal="true"
+        android:text="@string/attribution_title"
+        android:textColor="@color/whiteColor"
+        android:textSize="12sp"
+        />
+
+</RelativeLayout>
