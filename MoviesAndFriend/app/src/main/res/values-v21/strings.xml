@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="release_date">Release</string>
+    <string name="average_vote">Avg.Vote</string>
+</resources>

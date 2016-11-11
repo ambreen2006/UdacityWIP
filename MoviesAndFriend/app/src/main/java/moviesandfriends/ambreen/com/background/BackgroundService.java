@@ -10,36 +10,37 @@ import moviesandfriends.ambreen.com.exceptions.SyncException;
 import moviesandfriends.ambreen.com.sync.DataStoreFactory;
 import moviesandfriends.ambreen.com.sync.MoviesProvider;
 
-/**
- * Created by ambreen on 11/4/16.
- */
-
 public class BackgroundService extends IntentService {
 
-    public static final String BROADCAST_MSG="moviesandfriend.ambree.com.background.broadcast";
-    public static final String STATUS_CODE="moviesandfriend.ambree.com.background.status";
     Intent broadcastIntent;
 
     public BackgroundService()
     {
-        super("BackgroundService");
-        broadcastIntent = new Intent(BROADCAST_MSG);
+        //TODO: changed string that's passed to super to be dynamic
+        super(Constants.BackgroundServiceConst.DEFAULT_NAME);
+        broadcastIntent = new Intent(Constants.BackgroundServiceConst.BROADCAST_MSG);
     }
 
     @Override
     protected void onHandleIntent(Intent workIntent)
     {
         MoviesProvider provider = new MoviesProvider(this);
-        String filter = workIntent.getStringExtra("filter");
+
+        String filter = workIntent.getStringExtra(Constants.MovieDBConst.FILTER_REQUEST);
+        int page = workIntent.getIntExtra(Constants.MovieDBConst.PAGE_REQUEST,0);
         try
         {
-            provider.getListOfMoviesFilteredBy(filter);
-            broadcastIntent.putExtra(STATUS_CODE, DataStoreFactory.getMovieDataStore().count(filter));
+            int statusCode = (provider.getListOfMoviesFilteredBy(filter,page)).ordinal();
+
+            broadcastIntent.putExtra(Constants.MovieDBConst.PAGE_REQUEST,page);
+            broadcastIntent.putExtra(Constants.MovieDBConst.FILTER_REQUEST,filter);
+            broadcastIntent.putExtra(Constants.BackgroundServiceConst.RESULT_KEY,statusCode);
+
             LocalBroadcastManager.getInstance(this).sendBroadcast(broadcastIntent);
         }
         catch(SyncException e)
         {
-            Log.e(Constants.LogTag.BACKGROUND_SERVICE,e.toString());
+            Log.e(Constants.LogTagConst.BACKGROUND_SERVICE,e.toString());
         }
     }
 }

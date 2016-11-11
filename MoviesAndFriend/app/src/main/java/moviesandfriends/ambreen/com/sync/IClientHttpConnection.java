@@ -13,27 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by ambreen on 11/4/16.
+ *  Created by ambreen on 11/4/16.
  */
 
 package moviesandfriends.ambreen.com.sync;
 
 import moviesandfriends.ambreen.com.exceptions.SyncException;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
+import org.json.JSONObject;
+import java.net.URL;
 
 /**
- * Interface for a class that encapsulates logic of obtaining and storing movie data.
+ * Interface for client-server communication implementation
  */
-public interface IMoviesProvider
-{
-    public enum Result
-    {
-        SUCCESS, FAILED, COMPLETED, DUPLICATED_IGNORED
-    }
 
-    /** Implementation of this method should include accessing the movies content and storing
-     * the data in an object that conforms to IDataStore interface */
-    Result getListOfMoviesFilteredBy(String filter, int page) throws SyncException;
+public interface IClientHttpConnection
+{
+    public JSONObject fetchContent(URL url) throws SyncException;
+    public boolean isNetworkConnected();
 }

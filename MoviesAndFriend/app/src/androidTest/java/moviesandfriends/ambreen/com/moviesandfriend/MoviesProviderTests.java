@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import moviesandfriends.ambreen.com.constants.Constants;
 import moviesandfriends.ambreen.com.sync.MoviesProvider;
 
 import static org.junit.Assert.assertEquals;
@@ -39,7 +40,7 @@ public class MoviesProviderTests {
         MoviesProvider provider = new MoviesProvider(appContext);
         try
         {
-            provider.getListOfMoviesFilteredBy("Popular");
+            provider.getListOfMoviesFilteredBy(Constants.FilterTypeConst.POPULAR,1);
         }
         catch (Exception e) {
             Assert.assertNull(e);
