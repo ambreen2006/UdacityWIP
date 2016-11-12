@@ -10,14 +10,12 @@
     <GridView
         android:id="@+id/gridview"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:columnWidth="@dimen/poster_thumbnail_width"
         android:layout_weight="1"
         android:numColumns="auto_fit"
         android:stretchMode="columnWidth"
         android:gravity="center"
         android:horizontalSpacing="@dimen/poster_thumbnail_horizontal_spacing"
-        android:verticalSpacing="@dimen/poster_thumbnail_vertical_spacing"
-        >
-    </GridView>
+        android:verticalSpacing="@dimen/poster_thumbnail_vertical_spacing" />
 </LinearLayout>

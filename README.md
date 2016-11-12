@@ -12,7 +12,7 @@ Main responsibilities are divided among:
 UI elements interact with the IntentService for requesting new pages from the MovieDB server and does not directly call the MoviesProvider methods. Once data is available, any UI class that needs access directly gets it from the singleton LocalDataStore object.
 
 [LocalDataStore] <~> [ClientHttpConnection] <—> [MoviesProvider] <—> [BackgroundService]  …. { UI Elements } <~> [LocalDataStore] 
-                                                                           |
+                                                                           
 
 MoviesProvider class also managers which page to request next and when to ignore the request because all pages are downloaded.
 

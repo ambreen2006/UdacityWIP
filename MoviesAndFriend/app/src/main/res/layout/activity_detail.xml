@@ -20,74 +20,72 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/yellowColor"
-            android:textStyle="bold"
-            android:textSize="24sp" />
+            android:textSize="24sp"
+            android:textStyle="bold" />
 
         <ImageView
             android:id="@+id/poster_view"
-            android:paddingTop="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_below="@id/title_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:adjustViewBounds="true"
+            android:contentDescription="@string/movie_backdrop_poster_description"
             android:paddingBottom="10dp"
-            />
+            android:paddingTop="5dp" />
 
-        <android.support.v7.widget.CardView
-            xmlns:card_view="http://schemas.android.com/apk/res-auto"
-            card_view:cardCornerRadius="5dp"
+        <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
             android:id="@+id/meta_view_group_id"
-            android:layout_below="@id/poster_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@id/poster_view"
             android:paddingBottom="10dp"
-            >
+            card_view:cardCornerRadius="5dp">
 
             <RelativeLayout
-                android:background="@color/yellowColor"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-            <TextView
-                android:id="@+id/release_date_label"
-                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/release_date"
-                android:textColor="@color/colorPrimaryDark"
-                android:layout_alignParentStart="true"
-                android:padding="5dp"
-                android:textStyle="bold"
-                android:textSize="12sp" />
+                android:background="@color/yellowColor">
 
                 <TextView
-                android:id="@+id/release_date_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                   android:padding="5dp"
+                    android:id="@+id/release_date_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:padding="5dp"
+                    android:text="@string/release_date"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/release_date_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_toEndOf="@id/release_date_label"
-                android:textColor="@color/colorPrimaryDark"
-                android:textSize="12sp" />
+                    android:padding="5dp"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="12sp" />
 
                 <TextView
                     android:id="@+id/average_vote_view"
-                    android:layout_alignParentEnd="true"
-                    android:text="0.0"
-                    android:padding="5dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:padding="5dp"
+                    android:text="@string/default_vote"
                     android:textColor="@color/colorPrimaryDark"
                     android:textSize="12sp" />
 
                 <TextView
                     android:id="@+id/voting_average_label"
-                    android:layout_toStartOf="@id/average_vote_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_toStartOf="@id/average_vote_view"
+                    android:padding="5dp"
                     android:text="@string/average_vote"
                     android:textColor="@color/colorPrimaryDark"
-                    android:padding="5dp"
-                    android:textStyle="bold"
-                    android:textSize="12sp" />
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
 
             </RelativeLayout>
 
@@ -95,9 +93,9 @@
 
         <WebView
             android:id="@+id/movie_overview_web_view"
-            android:layout_below="@id/meta_view_group_id"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:layout_below="@id/meta_view_group_id" />
 
     </RelativeLayout>
 

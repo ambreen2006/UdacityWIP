@@ -5,4 +5,5 @@
     <string name="project_info">Udacity Project by Ambreen Haleem</string>
     <string name="attribution_logo_description">movie database</string>
     <string name="attribution_title">Powered By</string>
+    <string name="movie_backdrop_poster_description">Movie Poster</string>
 </resources>

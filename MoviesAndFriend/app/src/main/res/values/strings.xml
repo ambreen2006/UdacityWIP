@@ -4,8 +4,9 @@
     <string name="popular_sort_menu_text">Most Popular</string>
     <string name="release_date">Release</string>
     <string name="average_vote">Avg.Vote</string>
-
+    <string name="default_vote">0.0</string>
     <string name="project_info">Udacity Project by Ambreen Haleem</string>
     <string name="attribution_logo_description">movie database</string>
     <string name="attribution_title">Powered By</string>
+    <string name="movie_backdrop_poster_description">Movie Poster</string>
 </resources>
