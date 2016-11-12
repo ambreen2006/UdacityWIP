@@ -26,9 +26,6 @@ public class SyncException extends Exception {
     public int responseCode;
     public String message;
 
-    public SyncException()
-    {}
-
     public SyncException(String message)
     {
         this.message = message;

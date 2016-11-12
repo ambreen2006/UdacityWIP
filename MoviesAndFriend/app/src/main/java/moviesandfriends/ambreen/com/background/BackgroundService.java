@@ -7,40 +7,39 @@ import android.util.Log;
 
 import moviesandfriends.ambreen.com.constants.Constants;
 import moviesandfriends.ambreen.com.exceptions.SyncException;
-import moviesandfriends.ambreen.com.sync.DataStoreFactory;
 import moviesandfriends.ambreen.com.sync.MoviesProvider;
 
 public class BackgroundService extends IntentService {
 
-    Intent broadcastIntent;
+    private MoviesProvider mProvider;
 
     public BackgroundService()
     {
         //TODO: changed string that's passed to super to be dynamic
         super(Constants.BackgroundServiceConst.DEFAULT_NAME);
-        broadcastIntent = new Intent(Constants.BackgroundServiceConst.BROADCAST_MSG);
+        mProvider = new MoviesProvider(this);
     }
 
     @Override
     protected void onHandleIntent(Intent workIntent)
     {
-        MoviesProvider provider = new MoviesProvider(this);
-
         String filter = workIntent.getStringExtra(Constants.MovieDBConst.FILTER_REQUEST);
-        int page = workIntent.getIntExtra(Constants.MovieDBConst.PAGE_REQUEST,0);
-        try
-        {
-            int statusCode = (provider.getListOfMoviesFilteredBy(filter,page)).ordinal();
+        Intent broadcastIntent = new Intent(Constants.BackgroundServiceConst.BROADCAST_MSG);
 
-            broadcastIntent.putExtra(Constants.MovieDBConst.PAGE_REQUEST,page);
-            broadcastIntent.putExtra(Constants.MovieDBConst.FILTER_REQUEST,filter);
-            broadcastIntent.putExtra(Constants.BackgroundServiceConst.RESULT_KEY,statusCode);
+        int statusCode = -1;
+        String syncFailureErrorMsg = "";
 
-            LocalBroadcastManager.getInstance(this).sendBroadcast(broadcastIntent);
-        }
-        catch(SyncException e)
+        try {
+            statusCode = (mProvider.getListOfMoviesFilteredBy(filter)).ordinal();
+        } catch(SyncException e)
         {
+            statusCode = MoviesProvider.Result.FAILED.ordinal();
+            broadcastIntent.putExtra(Constants.BackgroundServiceConst.SYNC_ERROR,e.toString());
             Log.e(Constants.LogTagConst.BACKGROUND_SERVICE,e.toString());
         }
+
+        broadcastIntent.putExtra(Constants.MovieDBConst.FILTER_REQUEST,filter);
+        broadcastIntent.putExtra(Constants.BackgroundServiceConst.RESULT_KEY,statusCode);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(broadcastIntent);
     }
 }

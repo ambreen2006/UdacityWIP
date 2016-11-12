@@ -26,14 +26,14 @@ import java.net.MalformedURLException;
 /**
  * Interface for a class that encapsulates logic of obtaining and storing movie data.
  */
-public interface IMoviesProvider
-{
-    public enum Result
-    {
-        SUCCESS, FAILED, COMPLETED, DUPLICATED_IGNORED
+public interface IMoviesProvider {
+    public enum Result {
+        SUCCESS, FAILED, COMPLETED
     }
 
-    /** Implementation of this method should include accessing the movies content and storing
-     * the data in an object that conforms to IDataStore interface */
-    Result getListOfMoviesFilteredBy(String filter, int page) throws SyncException;
+    /**
+     * Implementation of this method should include accessing the movies content and storing
+     * the data in an object that conforms to IDataStore interface
+     */
+    Result getListOfMoviesFilteredBy(String filter) throws SyncException;
 }

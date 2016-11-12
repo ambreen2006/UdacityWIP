@@ -22,7 +22,7 @@ package moviesandfriends.ambreen.com.constants;
 public final class Constants {
 
     public static final class LogTagConst {
-        public final static String COMM = "COMM";
+        public final static String COMM = "HTTP_COMM";
         public final static String MOVIES_PROVIDER = "MOVIES_PROVIDER";
         public final static String VIEW = "UI";
         public final static String BACKGROUND_SERVICE = "BACKGROUND_SERVICE";
@@ -62,6 +62,7 @@ public final class Constants {
     public static final class BackgroundServiceConst {
         public static final String DEFAULT_NAME = "BackgroundService";
         public static final String RESULT_KEY = "service_result";
+        public static final String SYNC_ERROR = "sync_error";
         public static final String BROADCAST_MSG = "moviesandfriend.ambree.com.background.broadcast";
     }
 
@@ -80,5 +81,9 @@ public final class Constants {
         public static final String METHOD_GET = "GET";
         public static final int READ_TIMEOUT = 10000; /* milliseconds */
         public static final int CONNECT_TIMEOUT = 15000; /* milliseconds */
+    }
+
+    public static final class GridAdapterConst {
+        public static final int VISIBLE_THRESHOLD_DEFAULT = 2;
     }
 }

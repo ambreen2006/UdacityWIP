@@ -18,10 +18,13 @@
 
 package moviesandfriends.ambreen.com.sync;
 
-/** Interface for DataStore management object */
-public interface IDataStore<T>
-{
+/**
+ * Interface for DataStore management object
+ */
+public interface IDataStore<T> {
     int count(String filter);
+
     T getData(String filter, int index);
+
     void removeDataForFilter(String filter);
 }

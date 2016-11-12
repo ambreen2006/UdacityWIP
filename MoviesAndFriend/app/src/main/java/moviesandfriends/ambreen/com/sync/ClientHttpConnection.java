@@ -43,13 +43,16 @@ public class ClientHttpConnection implements IClientHttpConnection {
 
     private Context mContext;
 
-    /** Pass activity context when creating the object. Context is used for testing network connectivity */
+    /**
+     * Pass activity context when creating the object. Context is used for testing network connectivity
+     */
     ClientHttpConnection(Context context) {
         this.mContext = context;
     }
 
     /**
      * This method creates and post a GET request to the URL provided
+     *
      * @param url is the API to which to connect and fetch data from
      * @return A json object that was returned from the server
      * @throws SyncException
@@ -68,30 +71,24 @@ public class ClientHttpConnection implements IClientHttpConnection {
             mConnection.connect();
 
             mResponseCode = mConnection.getResponseCode();
-            if (mResponseCode == HttpURLConnection.HTTP_OK)
-            {
+            if (mResponseCode == HttpURLConnection.HTTP_OK) {
                 mInputStream = mConnection.getInputStream();
                 String responseStr = IOUtils.toString(mInputStream);
                 return (JSONObject) new JSONTokener(responseStr).nextValue();
-            }
-            else
-            {
+            } else {
                 InputStream errorStream = mConnection.getErrorStream();
                 String errorMsg = IOUtils.toString(errorStream);
-                SyncException syncException = new SyncException("ServerError: "+errorMsg);
+                SyncException syncException = new SyncException("ServerError: " + errorMsg);
                 syncException.responseCode = mResponseCode;
                 throw syncException;
             }
-        }
-        catch (JSONException | IOException j) {
+        } catch (JSONException | IOException j) {
             Log.e(Constants.LogTagConst.COMM, j.getMessage() + Log.getStackTraceString(j));
-        }
-        finally {
-            if(mInputStream != null) {
+        } finally {
+            if (mInputStream != null) {
                 try {
                     mInputStream.close();
-                }
-                catch (IOException e) {
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
@@ -100,16 +97,15 @@ public class ClientHttpConnection implements IClientHttpConnection {
         return null;
     }
 
-    /** Checks if network connectivity can  be established */
-    public boolean isNetworkConnected()
-    {
-        if(this.mContext != null)
-        {
+    /**
+     * Checks if network connectivity can  be established
+     */
+    public boolean isNetworkConnected() {
+        if (this.mContext != null) {
             ConnectivityManager connMgr = (ConnectivityManager) this.mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo info = connMgr.getActiveNetworkInfo();
             return info != null && info.isConnected();
-        }
-        else
+        } else
             return false;
     }
 }

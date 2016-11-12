@@ -43,12 +43,13 @@ import java.util.Date;
  */
 public class MoviesProvider implements IMoviesProvider {
 
-    private        ClientHttpConnection mHttpConnection;
-    private        LocalDataStore mDataStore;
+    private ClientHttpConnection mHttpConnection;
+    private LocalDataStore mDataStore;
     static private String sKey;
 
     /**
      * Currently used by test to inject mocked http connection object.
+     *
      * @param httpConnection
      */
     public MoviesProvider(ClientHttpConnection httpConnection) {
@@ -60,51 +61,50 @@ public class MoviesProvider implements IMoviesProvider {
     /**
      * Constructor that accepts the activity context. This context is then passed to the
      * ClientHttpConnection class for network connectivity status check
+     *
      * @param context is the activity context
      */
-    public MoviesProvider(Context context)
-    {
+    public MoviesProvider(Context context) {
         this((new ClientHttpConnection(context)));
     }
 
     /**
      * Contains the steps required to get the content, parse it, and store it in the data store.
      * Movies provider uses the MovieList object to query whether data for the specific page is
-     * already downloaded or not but that information is written once the page is retrieved and
-     * parsed. It is therefore upto the user of the class to serialize the request.
+     * already downloaded or not. Last page downloaded is stored in MovieList.lastPage once the
+     * page is retrieved and parsed. It is therefore upto the user of the class to serialize the request.
+     *
      * @param filter category such as popular top_rated
-     * @param page page number to request the movie DB API
      * @return Result enum specifying success, failure, completed (to indicate all pages are
      * downloaded) or ignored as a page request is already sent.
      * @throws SyncException
      */
-    public Result getListOfMoviesFilteredBy(String filter, int page) throws SyncException
-    {
-        if(!mHttpConnection.isNetworkConnected()) {
+    public Result getListOfMoviesFilteredBy(String filter) throws SyncException {
+        int page = 0;
+
+        if (!mHttpConnection.isNetworkConnected()) {
+            Log.d(Constants.LogTagConst.COMM, "Network connectivity could not be established");
             throw new SyncException("Network connectivity could not be established");
         }
 
         try {
             LocalDataStore.MovieList movieList = mDataStore.getMoviesList(filter);
-
-            if(movieList.lastPage == page) {
-                Log.d(Constants.LogTagConst.MOVIES_PROVIDER, "Ignoring page "+page+" for filter "+filter);
-                return Result.DUPLICATED_IGNORED;
-            }
+            page = movieList.lastPage + 1;
 
             if (movieList.totalNumberOfPages != Integer.MAX_VALUE && page > movieList.totalNumberOfPages) {
                 Log.d(Constants.LogTagConst.MOVIES_PROVIDER, "Ignoring page request " +
-                        "because all pages are downloaded for the filter "+filter);
+                        "because all pages are downloaded for the filter " + filter);
                 return Result.COMPLETED;
             }
 
-            Log.d(Constants.LogTagConst.MOVIES_PROVIDER, "Requesting page "+page+" for filter "+filter);
+            Log.d(Constants.LogTagConst.MOVIES_PROVIDER, "Requesting page " + page + " for filter " + filter);
 
-            JSONObject jsonObject = mHttpConnection.fetchContent(getURL(filter,page));
+            JSONObject jsonObject = mHttpConnection.fetchContent(getURL(filter, page));
 
             if (jsonObject != null) {
 
                 JSONArray results = jsonObject.getJSONArray(Constants.MovieDBConst.RESULTS_KEY);
+
                 movieList.totalNumberOfPages = jsonObject.getInt(Constants.MovieDBConst.TOTAL_PAGES_KEY);
 
                 for (int i = 0; i < results.length(); i++) {
@@ -138,47 +138,45 @@ public class MoviesProvider implements IMoviesProvider {
                 movieList.lastPage = page;
                 mDataStore.setDataList(filter, movieList);
                 return Result.SUCCESS;
-            }
-            else
-            {
+            } else {
+                Log.e(Constants.LogTagConst.MOVIES_PROVIDER, "Error: Empty JSON received.");
                 return Result.FAILED;
             }
 
-        }
-        catch (JSONException | MalformedURLException exception) {
-            Log.e(Constants.LogTagConst.MOVIES_PROVIDER,exception.toString());
+        } catch (JSONException | MalformedURLException exception) {
+            Log.e(Constants.LogTagConst.MOVIES_PROVIDER, exception.toString());
             return Result.FAILED;
         }
     }
 
     /**
      * Create URL for the main movie data request.
+     *
      * @param filter string represents category
-     * @param page int representing teh page to request from the moviesDB API.
+     * @param page   int representing teh page to request from the moviesDB API.
      * @return URL object for the movieDB Movies API
      * @throws MalformedURLException
      */
-    private URL getURL(String filter, int page) throws MalformedURLException
-    {
+    private URL getURL(String filter, int page) throws MalformedURLException {
         String stringURL = Constants.MovieDBConst.URL_PREFIX;
         stringURL += filter;
         stringURL += "?";
-        stringURL += Constants.MovieDBConst.PAGE_REQUEST+"="+page;
-        stringURL += "&"+Constants.MovieDBConst.API_KEY_REQUEST+"=";
+        stringURL += Constants.MovieDBConst.PAGE_REQUEST + "=" + page;
+        stringURL += "&" + Constants.MovieDBConst.API_KEY_REQUEST + "=";
         stringURL += sKey;
         return new URL(stringURL);
     }
 
     /**
      * Creates URL path for the poster or backdrop image
+     *
      * @param posterPath is the path portion returned as a result of the getListOfMoviesFilteredBy(String,int)
      *                   call.
-     * @param size specifies one of the size options made available by the movie db api
+     * @param size       specifies one of the size options made available by the movie db api
      * @return string representing url to the poster or backdrop image
      */
     @NonNull
-    public static String getStringURLForPoster(String posterPath, int size)
-    {
+    public static String getStringURLForPoster(String posterPath, int size) {
         String imageURLStr = Constants.MovieDBConst.THUMBNAIL_URL_PREFIX + size + posterPath;
         return imageURLStr;
     }

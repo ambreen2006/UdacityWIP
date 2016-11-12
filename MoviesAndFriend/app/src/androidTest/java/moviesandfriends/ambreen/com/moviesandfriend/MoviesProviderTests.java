@@ -40,7 +40,7 @@ public class MoviesProviderTests {
         MoviesProvider provider = new MoviesProvider(appContext);
         try
         {
-            provider.getListOfMoviesFilteredBy(Constants.FilterTypeConst.POPULAR,1);
+            provider.getListOfMoviesFilteredBy(Constants.FilterTypeConst.POPULAR);
         }
         catch (Exception e) {
             Assert.assertNull(e);

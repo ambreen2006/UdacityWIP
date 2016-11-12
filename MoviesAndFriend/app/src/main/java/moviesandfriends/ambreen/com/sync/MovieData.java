@@ -24,8 +24,7 @@ import java.util.Date;
  * MovieData class stores all values from movies results array. It's only purpose is to provide
  * a UDT for a movie.
  */
-public class MovieData
-{
+public class MovieData {
     public String title;
     public String posterPath;
     public Date releaseDate;
@@ -33,10 +32,10 @@ public class MovieData
     public String overview;
     public String backdropPath;
 
-    public MovieData() {}
+    public MovieData() {
+    }
 
-    public MovieData(String title, String posterPath, Date releaseDate, float voteAverage, String overview, String backdropPath)
-    {
+    public MovieData(String title, String posterPath, Date releaseDate, float voteAverage, String overview, String backdropPath) {
         this.title = title;
         this.posterPath = posterPath;
         this.releaseDate = releaseDate;
